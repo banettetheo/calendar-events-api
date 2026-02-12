@@ -10,11 +10,15 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Component
-@RequiredArgsConstructor
 public class MongoEventRepositoryAdapter implements EventRepository {
 
     private final ReactiveEventMongoRepository mongoRepository;
     private final EventPersistenceMapper mapper;
+
+    public MongoEventRepositoryAdapter(ReactiveEventMongoRepository mongoRepository, EventPersistenceMapper mapper) {
+        this.mongoRepository = mongoRepository;
+        this.mapper = mapper;
+    }
 
     @Override
     public Flux<Event> findAll() {

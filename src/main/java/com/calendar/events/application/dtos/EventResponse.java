@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -17,7 +18,7 @@ public class EventResponse {
     private String id;
     private String title;
     private String organizerId;
-    private Instant date;
+    private LocalDateTime date;
     private String location;
     private String image;
     private String description;

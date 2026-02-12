@@ -6,7 +6,6 @@ import com.calendar.events.application.dtos.EventRequest;
 import com.calendar.events.application.dtos.EventResponse;
 import com.calendar.events.application.mappers.EventRestMapper;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
@@ -17,11 +16,15 @@ import org.springframework.security.oauth2.jwt.Jwt;
 
 @RestController
 @RequestMapping("events")
-@RequiredArgsConstructor
 public class EventController {
 
     private final EventService eventService;
     private final EventRestMapper mapper;
+
+    public EventController(EventService eventService, EventRestMapper mapper) {
+        this.eventService = eventService;
+        this.mapper = mapper;
+    }
 
     @GetMapping
     public Flux<EventResponse> getAllEvents(@AuthenticationPrincipal Jwt jwt) {

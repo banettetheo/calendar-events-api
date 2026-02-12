@@ -9,6 +9,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class EventEntity {
     private String id;
     private String title;
     private String organizerId;
-    private Instant date;
+    private LocalDateTime date;
     private String location;
     private String image;
     private String description;

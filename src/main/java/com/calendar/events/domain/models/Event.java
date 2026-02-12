@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class Event {
     private String id;
     private String title;
     private String organizerId;
-    private Instant date;
+    private LocalDateTime date;
     private String location;
     private String image;
     private String description;
