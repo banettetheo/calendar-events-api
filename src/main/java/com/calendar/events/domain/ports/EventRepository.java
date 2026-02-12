@@ -12,4 +12,8 @@ public interface EventRepository {
     Mono<Event> save(Event event);
 
     Mono<Void> deleteById(String id);
+
+    Flux<Event> findByParticipantId(String userId);
+
+    Flux<Event> findByParticipantIdNot(String userId);
 }

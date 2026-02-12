@@ -41,4 +41,12 @@ public class EventService {
                     return eventRepository.save(event);
                 });
     }
+
+    public Flux<Event> getSubscribedEvents(String userId) {
+        return eventRepository.findByParticipantId(userId);
+    }
+
+    public Flux<Event> getFeedEvents(String userId) {
+        return eventRepository.findByParticipantIdNot(userId);
+    }
 }

@@ -10,6 +10,7 @@ import org.mapstruct.Mapping;
 public interface EventRestMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "participantIds", ignore = true)
+    @Mapping(target = "organizerId", ignore = true)
     Event toDomain(EventRequest request);
 
     @Mapping(target = "subscribed", ignore = true)

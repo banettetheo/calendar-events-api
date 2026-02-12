@@ -17,11 +17,11 @@ import java.time.LocalDateTime;
 public class EventRequest {
     @NotBlank(message = "Title is required")
     private String title;
-    private String organizerId;
     @NotNull(message = "Date is required")
     private LocalDateTime date;
     @NotBlank(message = "Location is required")
     private String location;
     private String image;
     private String description;
+    private boolean subscribeByDefault;
 }

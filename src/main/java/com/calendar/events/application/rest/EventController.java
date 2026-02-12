@@ -26,16 +26,21 @@ public class EventController {
         this.mapper = mapper;
     }
 
-    @GetMapping
-    public Flux<EventResponse> getAllEvents(@AuthenticationPrincipal Jwt jwt) {
+    @GetMapping("/me/subscribed")
+    public Flux<EventResponse> getMySubscribedEvents(@AuthenticationPrincipal Jwt jwt) {
         String userId = jwt.getClaimAsString("businessId");
-        return eventService.getAllEvents().map(event -> toResponse(event, userId));
+        return eventService.getSubscribedEvents(userId).map(mapper::toResponse);
+    }
+
+    @GetMapping("/me/feed")
+    public Flux<EventResponse> getMyFeedEvents(@AuthenticationPrincipal Jwt jwt) {
+        String userId = jwt.getClaimAsString("businessId");
+        return eventService.getFeedEvents(userId).map(mapper::toResponse);
     }
 
     @GetMapping("/{id}")
-    public Mono<EventResponse> getEventById(@PathVariable String id, @AuthenticationPrincipal Jwt jwt) {
-        String userId = jwt.getClaimAsString("businessId");
-        return eventService.getEventById(id).map(event -> toResponse(event, userId));
+    public Mono<EventResponse> getEventById(@PathVariable String id) {
+        return eventService.getEventById(id).map(mapper::toResponse);
     }
 
     @PostMapping
@@ -44,7 +49,12 @@ public class EventController {
         String userId = jwt.getClaimAsString("businessId");
         Event event = mapper.toDomain(request);
         event.setOrganizerId(userId);
-        return eventService.createEvent(event).map(e -> toResponse(e, userId));
+
+        if (request.isSubscribeByDefault()) {
+            event.getParticipantIds().add(userId);
+        }
+
+        return eventService.createEvent(event).map(mapper::toResponse);
     }
 
     @DeleteMapping("/{id}")
@@ -56,16 +66,6 @@ public class EventController {
     @PostMapping("/{id}/subscribe")
     public Mono<EventResponse> toggleSubscription(@PathVariable String id, @AuthenticationPrincipal Jwt jwt) {
         String userId = jwt.getClaimAsString("businessId");
-        return eventService.toggleSubscription(id, userId).map(event -> toResponse(event, userId));
-    }
-
-    private EventResponse toResponse(Event event, String userId) {
-        EventResponse response = mapper.toResponse(event);
-        if (event.getParticipantIds() != null && userId != null) {
-            response.setSubscribed(event.getParticipantIds().contains(userId));
-        } else {
-            response.setSubscribed(false);
-        }
-        return response;
+        return eventService.toggleSubscription(id, userId).map(mapper::toResponse);
     }
 }

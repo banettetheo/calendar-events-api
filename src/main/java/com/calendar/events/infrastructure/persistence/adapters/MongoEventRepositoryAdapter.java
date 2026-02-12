@@ -39,4 +39,14 @@ public class MongoEventRepositoryAdapter implements EventRepository {
     public Mono<Void> deleteById(String id) {
         return mongoRepository.deleteById(id);
     }
+
+    @Override
+    public Flux<Event> findByParticipantId(String userId) {
+        return mongoRepository.findAllByParticipantIdsContains(userId).map(mapper::toDomain);
+    }
+
+    @Override
+    public Flux<Event> findByParticipantIdNot(String userId) {
+        return mongoRepository.findAllByParticipantIdsNotContains(userId).map(mapper::toDomain);
+    }
 }
