@@ -1,0 +1,122 @@
+package com.calendar.events.infrastructure.persistence.adapters;
+
+import com.calendar.events.domain.models.Event;
+import com.calendar.events.infrastructure.persistence.entities.EventEntity;
+import com.calendar.events.infrastructure.persistence.mappers.EventPersistenceMapper;
+import com.calendar.events.infrastructure.persistence.repositories.ReactiveEventMongoRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
+class MongoEventRepositoryAdapterTest {
+
+    @Mock
+    private ReactiveEventMongoRepository mongoRepository;
+
+    @Mock
+    private EventPersistenceMapper mapper;
+
+    private MongoEventRepositoryAdapter adapter;
+
+    @BeforeEach
+    void setUp() {
+        adapter = new MongoEventRepositoryAdapter(mongoRepository, mapper);
+    }
+
+    @Test
+    void findAll_shouldReturnMappedEvents() {
+        EventEntity entity = new EventEntity();
+        Event domain = Event.builder().build();
+
+        when(mongoRepository.findAll()).thenReturn(Flux.just(entity));
+        when(mapper.toDomain(entity)).thenReturn(domain);
+
+        Flux<Event> result = adapter.findAll();
+
+        StepVerifier.create(result)
+                .expectNext(domain)
+                .verifyComplete();
+    }
+
+    @Test
+    void findById_shouldReturnMappedEvent() {
+        EventEntity entity = new EventEntity();
+        Event domain = Event.builder().build();
+
+        when(mongoRepository.findById("1")).thenReturn(Mono.just(entity));
+        when(mapper.toDomain(entity)).thenReturn(domain);
+
+        Mono<Event> result = adapter.findById("1");
+
+        StepVerifier.create(result)
+                .expectNext(domain)
+                .verifyComplete();
+    }
+
+    @Test
+    void save_shouldMapAndSave() {
+        Event domainInput = Event.builder().title("Title").build();
+        EventEntity entityInput = new EventEntity();
+        EventEntity entitySaved = new EventEntity();
+        Event domainOutput = Event.builder().id("1").title("Title").build();
+
+        when(mapper.toEntity(domainInput)).thenReturn(entityInput);
+        when(mongoRepository.save(entityInput)).thenReturn(Mono.just(entitySaved));
+        when(mapper.toDomain(entitySaved)).thenReturn(domainOutput);
+
+        Mono<Event> result = adapter.save(domainInput);
+
+        StepVerifier.create(result)
+                .expectNext(domainOutput)
+                .verifyComplete();
+    }
+
+    @Test
+    void deleteById_shouldCallRepository() {
+        when(mongoRepository.deleteById("1")).thenReturn(Mono.empty());
+
+        Mono<Void> result = adapter.deleteById("1");
+
+        StepVerifier.create(result)
+                .verifyComplete();
+    }
+
+    @Test
+    void findByParticipantId_shouldReturnMappedEvents() {
+        EventEntity entity = new EventEntity();
+        Event domain = Event.builder().build();
+
+        when(mongoRepository.findAllByParticipantIdsContains("user1")).thenReturn(Flux.just(entity));
+        when(mapper.toDomain(entity)).thenReturn(domain);
+
+        Flux<Event> result = adapter.findByParticipantId("user1");
+
+        StepVerifier.create(result)
+                .expectNext(domain)
+                .verifyComplete();
+    }
+
+    @Test
+    void findByParticipantIdNot_shouldReturnMappedEvents() {
+        EventEntity entity = new EventEntity();
+        Event domain = Event.builder().build();
+
+        when(mongoRepository.findAllByParticipantIdsNotContains("user1")).thenReturn(Flux.just(entity));
+        when(mapper.toDomain(entity)).thenReturn(domain);
+
+        Flux<Event> result = adapter.findByParticipantIdNot("user1");
+
+        StepVerifier.create(result)
+                .expectNext(domain)
+                .verifyComplete();
+    }
+}
