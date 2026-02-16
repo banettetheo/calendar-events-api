@@ -13,6 +13,5 @@ public interface EventRestMapper {
     @Mapping(target = "organizerId", ignore = true)
     Event toDomain(EventRequest request);
 
-    @Mapping(target = "subscribed", ignore = true)
     EventResponse toResponse(Event domain);
 }

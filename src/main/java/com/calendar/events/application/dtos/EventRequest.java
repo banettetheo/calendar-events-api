@@ -8,7 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Data
 @Builder
@@ -18,7 +18,8 @@ public class EventRequest {
     @NotBlank(message = "Title is required")
     private String title;
     @NotNull(message = "Date is required")
-    private LocalDateTime date;
+    private Instant startDate;
+    private Instant endDate;
     @NotBlank(message = "Location is required")
     private String location;
     private String image;
